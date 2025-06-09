@@ -11,13 +11,41 @@ return {
         local stats = require("lazy").stats()
         local total_plugins = stats.count
         local get_header = require("utils.startpage-headers")
+
+        local colors = {
+            bg = "#161616",
+            fg = "#ffffff",
+            red = "#ff7575",
+            green = "#75ffca",
+            yellow = "#f9d479",
+            blue = "#75a3ff",
+            magenta = "#ff7dff",
+            cyan = "#75ffff",
+            comment = "#767676",
+            black = "#262626",
+            white = "#ebebeb",
+            orange = "#ff9859",
+            purple = "#c29eff",
+        }
+
+        vim.api.nvim_set_hl(0, "DashboardHeader", { fg = colors.cyan })
+        vim.api.nvim_set_hl(0, "DashboardButtons", { fg = colors.white })
+        vim.api.nvim_set_hl(0, "DashboardShortcut", { fg = colors.blue })
+        vim.api.nvim_set_hl(0, "DashboardFooter", { fg = colors.comment })
+        vim.api.nvim_set_hl(0, "DashboardGreeting", { fg = colors.purple })
+
+        dashboard.section.header.opts.hl = "DashboardHeader"
+        dashboard.section.buttons.opts.hl = "DashboardButtons"
+        dashboard.section.footer.opts.hl = "DashboardFooter"
+
         local function button(sc, txt, keybind, keybind_opts)
             local b = dashboard.button(sc, txt, keybind, keybind_opts)
-            b.opts.hl_shortcut = "MiniIconsPurple"
+            b.opts.hl = "DashboardButtons"
+            b.opts.hl_shortcut = "DashboardShortcut"
             return b
         end
 
-        dashboard.section.header.val = get_header(0, true) -- (index, bool) index of ascii art bool if you want random or not eg: (30, false)
+        dashboard.section.header.val = get_header(0, true)
         dashboard.section.buttons.val = {
             button("e", icons.ui.new_file .. " Novo Arquivo", ":ene <BAR> startinsert <CR>"),
             button("f", icons.ui.files .. " Encontrar Arquivos", ":Telescope find_files <CR>"),
@@ -32,29 +60,23 @@ return {
             local footer_datetime = os.date("  %m-%d-%Y   %H:%M:%S")
             local version = vim.version()
             local nvim_version_info = "   v" .. version.major .. "." .. version.minor .. "." .. version.patch
-            local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
             local value = footer_datetime .. "   Plugins " .. total_plugins .. nvim_version_info
             return value
         end
 
-        -- Append the footer string below the ASCII art
         local count = 0
         for _ in pairs(dashboard.section.header.val) do
             count = count + 1
         end
         local extraline = count - 14
-        print(extraline)
 
         for _ = 1, extraline do
             table.insert(dashboard.section.header.val, 1, "")
         end
-        -- table.insert(dashboard.section.header.val, footer())
 
-        -- dashboard.section.footer.val = require("alpha.fortune")()
         dashboard.section.footer.val = footer()
 
-        local greeting = function()
-            -- Determine the appropriate greeting based on the hour
+        local function greeting()
             local mesg
             local username = os.getenv("USER") or os.getenv("USERNAME") or "User"
             if datetime >= 0 and datetime < 6 then
@@ -69,7 +91,7 @@ return {
                 mesg = "Hi " .. username .. ", it's getting late, get some sleep 😴"
             end
             return mesg
-        end        
+        end
 
         local function capture(cmd, raw)
             local f = assert(io.popen(cmd, "r"))
@@ -109,31 +131,26 @@ return {
             val = greeting,
             opts = {
                 position = "center",
+                hl = "DashboardGreeting",
             },
-        }
-
-        local section = {
-            header = dashboard.section.header,
-            bottom_section = bottom_section,
-            buttons = dashboard.section.buttons,
-            footer = dashboard.section.footer,
         }
 
         local opts = {
             layout = {
                 { type = "padding", val = 1 },
-                section.header,
+                dashboard.section.header,
                 { type = "padding", val = 2 },
-                section.buttons,
+                dashboard.section.buttons,
                 { type = "padding", val = 1 },
-                section.bottom_section,
+                bottom_section,
                 { type = "padding", val = 1 },
-                section.footer,
+                dashboard.section.footer,
+            },
+            opts = {
+                noautocmd = true,
             },
         }
-        dashboard.opts.opts.noautocmd = true
 
-        -- close Lazy and re-open when the dashboard is ready
         if vim.o.filetype == "lazy" then
             vim.cmd.close()
             vim.api.nvim_create_autocmd("User", {
@@ -147,7 +164,6 @@ return {
 
         alpha.setup(opts)
 
-        -- don't show status line in alpha dashboard
         vim.api.nvim_create_autocmd({ "User" }, {
             pattern = { "AlphaReady" },
             callback = function()
@@ -155,7 +171,6 @@ return {
             end,
         })
 
-        -- onefetch header for alpha dashboard if onefetch is installed and git repo is present
         vim.api.nvim_create_augroup("vimrc_alpha", { clear = true })
         vim.api.nvim_create_autocmd({ "User" }, {
             group = "vimrc_alpha",
