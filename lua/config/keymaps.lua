@@ -12,3 +12,13 @@ map("n", "<C-h>", "<C-w>h", opts)
 map("n", "<C-l>", "<C-w>l", opts)
 map("n", "<C-j>", "<C-w>j", opts)
 map("n", "<C-k>", "<C-w>k", opts)
+
+map("n", "<A-h>", ":BufferLineCyclePrev<CR>", opts)
+map("n", "<A-l>", ":BufferLineCycleNext<CR>", opts)
+map("n", "<A-H>", ":BufferLineMovePrev<CR>", opts)
+map("n", "<A-L>", ":BufferLineMoveNext<CR>", opts)
+
+for i = 1, 9 do
+    map("n", "<leader>" .. i, ":BufferLineGoToBuffer " .. i .. "<CR>", opts)
+end
+map("n", "<leader>$", ":BufferLineGoToBuffer -1<CR>", opts)
