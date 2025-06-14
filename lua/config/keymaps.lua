@@ -18,7 +18,5 @@ map("n", "<A-l>", ":BufferLineCycleNext<CR>", opts)
 map("n", "<A-H>", ":BufferLineMovePrev<CR>", opts)
 map("n", "<A-L>", ":BufferLineMoveNext<CR>", opts)
 
-for i = 1, 9 do
-    map("n", "<leader>" .. i, ":BufferLineGoToBuffer " .. i .. "<CR>", opts)
-end
-map("n", "<leader>$", ":BufferLineGoToBuffer -1<CR>", opts)
+vim.keymap.set("n", "<leader>e", "<Cmd>NvimTreeToggle<CR>", opts)
+vim.keymap.set("n", "<leader>o", "<Cmd>NvimTreeFocus<CR>", opts)
