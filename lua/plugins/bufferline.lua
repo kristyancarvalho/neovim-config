@@ -8,7 +8,7 @@ return {
                 numbers = "ordinal",
                 close_command = "bdelete! %d",
                 right_mouse_command = "bdelete! %d",
-                indicator = { style = "underline" },
+                indicator = { style = "icon" },
                 buffer_close_icon = "",
                 modified_icon = "●",
                 close_icon = "",
