@@ -17,7 +17,12 @@ return {
                 filetype = { enabled = true },
                 separator = { left = "▎", right = "" },
                 modified = { button = "●" },
-                pinned = { button = "車", filename = true },
+                pinned = { button = "車", filename = true },
+                gitsigns = {
+                    added = { text = '+' },
+                    changed = { text = '~' },
+                    deleted = { text = '-' },
+                },
             },
             sidebar_filetypes = {},
         }
@@ -34,4 +39,3 @@ return {
         vim.keymap.set("n", "<leader>$", "<Cmd>BufferLast<CR>", opts)
     end,
 }
-
